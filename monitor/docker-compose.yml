@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  grafana:
+    image: grafana/grafana:9.3.2
+    restart: always
+    ports:
+      - 3001:3000
+    environment:
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-clock-panel,grafana-simple-json-datasource
+      - GF_SECURITY_ADMIN_PASSWORD=t/6g4yj3
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana:/etc/grafana:ro
+      - grafana-data:/var/lib/grafana
+
+  loki:
+    image: grafana/loki:2.6.0
+    restart: always
+    ports:
+      - 3100:3100
+    volumes:
+      - ./loki/loki-config.yml:/etc/loki/local-config.yaml
+      - ./loki/rule.yml:/etc/rules/fake/rule.yaml
+      - loki-data:/loki
+
+  alertmanager:
+    image: prom/alertmanager:latest
+    restart: always
+    ports:
+      - 9093:9093
+    volumes:
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - ./alertmanager/default.tmpl:/etc/alertmanager/templates/default.tmpl
+
+volumes:
+  grafana-data:
+  prometheus-data:
+  loki-data:

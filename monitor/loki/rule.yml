@@ -1,0 +1,9 @@
+groups:
+- name: test_log_alert
+  rules:
+    - alert: test_log_alert
+      expr: 'rate({compose_service="backend_demo"} |= "error" | json[5m]) > 0'
+      for: 0s
+      labels:
+        alertname: backend_demo_error_log
+        severity: error

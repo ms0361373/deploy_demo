@@ -1,0 +1,34 @@
+---
+- name: Download GitLab Artifacts
+  hosts: localhost
+
+  tasks:
+    - name: Download frontend artifacts
+      get_url:
+        url: "https://proton.vir000.com/Jason/frontend_demo/-/jobs/artifacts/master/download?job=build"
+        dest: "../frontend/artifacts.zip"
+    - name: unpack artifacts zip
+      unarchive:
+        src: "../frontend/artifacts.zip"
+        dest: "../frontend"
+    - name: move build file to target server
+      copy:
+        src: ../frontend/build
+        dest: ../../demo_docker/frontend
+    - name: Download backend artifacts
+      get_url:
+        url: "https://proton.vir000.com/Jason/backend_demo/-/jobs/artifacts/master/download?job=build"
+        dest: "../backend/artifacts.zip"
+    - name: unpack artifacts zip
+      unarchive:
+        src: "../backend/artifacts.zip"
+        dest: "../backend"
+    - name: move build file to target server
+      copy:
+        src: ../backend/build
+        dest: ../../demo_docker/backend
+        mode: 0775
+    - name: restart docker compose
+      shell: docker-compose down; docker-compose up -d
+      args:
+        chdir: ../../demo_docker/docker/

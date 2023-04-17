@@ -1,0 +1,6 @@
+{{ define "telegram.default" }}
+Error log found in test
+{{ range .Alerts.Firing }}{{ range .Labels.SortedPairs }} - {{ .Name }} = {{ .Value }}
+{{ end }}
+{{ end }}
+{{ end }}

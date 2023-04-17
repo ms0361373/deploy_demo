@@ -1,0 +1,31 @@
+version: '3'
+services:
+  backend_demo:
+    image: alpine:3.14
+    restart: always
+    volumes:
+      - ../backend/build/backend_demo:/backend_demo
+    ports:
+      - 8080:8080
+    command:
+      - /bin/sh
+      - -c
+      - |
+        mkdir /lib64 && ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2
+        ./backend_demo log
+    logging: &logging
+      driver: loki
+      options:
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        labels: "environment"
+    labels: &labels
+      environment: "test"
+  frontend_demo:
+    image: nginx:1.18
+    volumes:
+      - ../frontend/build:/usr/share/nginx/html
+    ports:
+      - 8081:80
+    restart: always
+    logging: *logging
+    labels: *labels
